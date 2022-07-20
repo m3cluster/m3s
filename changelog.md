@@ -1,5 +1,10 @@
 # Changelog
 
+## master
+
+- Fix docker user defined network.
+- Add redis reconnect after unhealthy ping. 
+
 ## v0.3.0
 
 - Add Redis Authentication Support

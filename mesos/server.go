@@ -21,16 +21,14 @@ func StartK3SServer(taskID string) {
 		newTaskID, _ = util.GenUUID()
 	}
 
+	cni := framework.MesosCNI
+
 	var cmd mesosutil.Command
 
 	cmd.TaskID = newTaskID
 
 	cmd.ContainerType = "DOCKER"
 	cmd.ContainerImage = config.ImageK3S
-	cmd.NetworkInfo = []mesosproto.NetworkInfo{{
-		Name: &framework.MesosCNI,
-	}}
-
 	cmd.Shell = true
 	cmd.Privileged = true
 	cmd.ContainerImage = config.ImageK3S
@@ -46,10 +44,15 @@ func StartK3SServer(taskID string) {
 	if framework.MesosCNI == "" {
 		// net-alias is only supported onuser-defined networks
 		if config.DockerCNI != "bridge" {
-			cmd.DockerParameter = addDockerParameter(cmd.DockerParameter, mesosproto.Parameter{Key: "net", Value: config.DockerCNI})
+			cmd.NetworkMode = "user"
+			cni = config.DockerCNI
 			cmd.DockerParameter = addDockerParameter(cmd.DockerParameter, mesosproto.Parameter{Key: "net-alias", Value: framework.FrameworkName + "server"})
 		}
 	}
+
+	cmd.NetworkInfo = []mesosproto.NetworkInfo{{
+		Name: &cni,
+	}}
 
 	cmd.Uris = []mesosproto.CommandInfo_URI{
 		{

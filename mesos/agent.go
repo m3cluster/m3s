@@ -21,6 +21,8 @@ func StartK3SAgent(taskID string) {
 		newTaskID, _ = util.GenUUID()
 	}
 
+	cni := framework.MesosCNI
+
 	hostport := getRandomHostPort(2)
 	if hostport == 0 {
 		logrus.WithField("func", "StartK3SAgent").Error("Could not find free ports")
@@ -32,9 +34,6 @@ func StartK3SAgent(taskID string) {
 
 	cmd.ContainerType = "DOCKER"
 	cmd.ContainerImage = config.ImageK3S
-	cmd.NetworkInfo = []mesosproto.NetworkInfo{{
-		Name: &framework.MesosCNI,
-	}}
 
 	cmd.DockerPortMappings = []mesosproto.ContainerInfo_DockerInfo_PortMapping{
 		{
@@ -63,10 +62,14 @@ func StartK3SAgent(taskID string) {
 	if framework.MesosCNI == "" {
 		// net-alias is only supported onuser-defined networks
 		if config.DockerCNI != "bridge" {
-			cmd.DockerParameter = addDockerParameter(cmd.DockerParameter, mesosproto.Parameter{Key: "net", Value: config.DockerCNI})
+			cmd.NetworkMode = "user"
+			cni = config.DockerCNI
 			cmd.DockerParameter = addDockerParameter(cmd.DockerParameter, mesosproto.Parameter{Key: "net-alias", Value: framework.FrameworkName + "agent"})
 		}
 	}
+	cmd.NetworkInfo = []mesosproto.NetworkInfo{{
+		Name: &cni,
+	}}
 
 	cmd.Uris = []mesosproto.CommandInfo_URI{
 		{

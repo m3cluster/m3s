@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export KUBECONFIG=$MESOS_SANDBOX/kubeconfig.yaml
-export BRANCH=master
+export BRANCH=update-k3s
 
 if [ -n $1 ]
 then

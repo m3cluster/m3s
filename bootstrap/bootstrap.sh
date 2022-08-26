@@ -5,12 +5,12 @@ cat /etc/resolv.conf
 apt-get update -y
 mkdir -p /etc/cni/net.d
 
-export KUBERNETES_VERSION=v1.21.1
+export KUBERNETES_VERSION=v1.24.4
 export INSTALL_K3S_VERSION=$KUBERNETES_VERSION+k3s1
 export INSTALL_K3S_SKIP_ENABLE=true
 export INSTALL_K3S_SKIP_START=true
 export KUBECONFIG=/mnt/mesos/sandbox/kubeconfig.yaml
-export BRANCH=master
+export BRANCH=update-k3s
 
 ## Export json as environment variables
 ## example: MESOS_SANDBOX_VAR='{ "CUSTOMER":"test-ltd" }'
